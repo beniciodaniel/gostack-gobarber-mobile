@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -13,10 +14,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
+import * as Yup from 'yup';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import logoImg from '../../assets/logo.png';
+
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import {
   Container,
@@ -27,6 +31,11 @@ import {
   CreateAccountButtonText,
 } from './styles';
 
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
 
@@ -35,8 +44,33 @@ const SignIn: React.FC = () => {
   // porque o button do react native nao possui o type="submit"
   const formRef = useRef<FormHandles>(null);
 
-  const handleSignIn = useCallback((data: object) => {
-    console.log(data);
+  const handleSignIn = useCallback(async (formData: SignInFormData) => {
+    try {
+      formRef.current?.setErrors({}); // para sempre fazer a validação do zero
+
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        password: Yup.string().required('Senha obrigatória'),
+      });
+
+      await schema.validate(formData, {
+        abortEarly: false, // por padrão o Yup para no primeiro erro
+      });
+
+      // await signIn({ email: formData.email, password: formData.password });
+      // history.push('/dashboard');
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(error);
+
+        formRef.current?.setErrors(errors);
+        return;
+      }
+      // disparar um toast
+      Alert.alert('Erro na autenticação', 'Ocorreu um erro ao fazer login');
+    }
   }, []);
 
   return (
