@@ -21,6 +21,7 @@ import Button from '../../components/Button';
 import logoImg from '../../assets/logo.png';
 
 import getValidationErrors from '../../utils/getValidationErrors';
+import { useAuth } from '../../context/AuthContext';
 
 import {
   Container,
@@ -38,40 +39,43 @@ interface SignInFormData {
 
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
-
   const passwordInputRef = useRef<TextInput>(null);
+
+  const { signIn } = useAuth();
 
   // porque o button do react native nao possui o type="submit"
   const formRef = useRef<FormHandles>(null);
 
-  const handleSignIn = useCallback(async (formData: SignInFormData) => {
-    try {
-      formRef.current?.setErrors({}); // para sempre fazer a validação do zero
+  const handleSignIn = useCallback(
+    async (formData: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({}); // para sempre fazer a validação do zero
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um e-mail válido'),
-        password: Yup.string().required('Senha obrigatória'),
-      });
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().required('Senha obrigatória'),
+        });
 
-      await schema.validate(formData, {
-        abortEarly: false, // por padrão o Yup para no primeiro erro
-      });
+        await schema.validate(formData, {
+          abortEarly: false, // por padrão o Yup para no primeiro erro
+        });
 
-      // await signIn({ email: formData.email, password: formData.password });
-      // history.push('/dashboard');
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
+        await signIn({ email: formData.email, password: formData.password });
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
 
-        formRef.current?.setErrors(errors);
-        return;
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        // disparar um toast
+        Alert.alert('Erro na autenticação', 'Ocorreu um erro ao fazer login');
       }
-      // disparar um toast
-      Alert.alert('Erro na autenticação', 'Ocorreu um erro ao fazer login');
-    }
-  }, []);
+    },
+    [signIn],
+  );
 
   return (
     <>
