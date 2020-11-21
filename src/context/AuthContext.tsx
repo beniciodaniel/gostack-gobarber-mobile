@@ -48,6 +48,8 @@ const AuthProvider: React.FC = ({ children }) => {
       ]);
 
       if (token[1] && user[1]) {
+        api.defaults.headers.authorization = `Bearer ${token[1]}`;
+
         setData({ token: token[1], user: JSON.parse(user[1]) });
         // return { token, user: JSON.parse(user) }; // user = string, logo precisa transformar em objeto;
       }
@@ -70,6 +72,8 @@ const AuthProvider: React.FC = ({ children }) => {
       ['@GoBarber:token', token],
       ['@GoBarber:user', JSON.stringify(user)], // user = objeto, logo precisa transformar em string;
     ]);
+
+    api.defaults.headers.authorization = `Bearer ${token}`;
 
     setData({ token, user });
   }, []);
