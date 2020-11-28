@@ -18,6 +18,14 @@ export const Title = styled.Text`
   text-align: center;
 `;
 
+export const WeekDayFormatted = styled.Text`
+  text-transform: capitalize;
+  font-family: 'RobotoSlab-Regular';
+  font-size: 18px;
+  color: #999591;
+  margin-top: 16px;
+`;
+
 export const Description = styled.Text`
   font-family: 'RobotoSlab-Regular';
   font-size: 18px;
