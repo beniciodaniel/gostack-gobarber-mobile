@@ -55,7 +55,7 @@ const SignUp: React.FC = () => {
           abortEarly: false, // por padrão o Yup para no primeiro erro
         });
 
-        await api.post('/users', formData); // cadastrando usuário no backend
+        await api.post('users', formData); // cadastrando usuário no backend
 
         Alert.alert(
           'Cadastro realizado com sucesso!',
@@ -70,7 +70,7 @@ const SignUp: React.FC = () => {
           formRef.current?.setErrors(errors);
           return;
         }
-        // disparar um toast
+
         Alert.alert(
           'Erro na autenticação',
           'Ocorreu um erro ao fazer cadastro',
@@ -102,7 +102,6 @@ const SignUp: React.FC = () => {
             <Form
               ref={formRef}
               onSubmit={data => {
-                console.log(data);
                 handleSignUp(data);
               }}
             >
@@ -140,7 +139,7 @@ const SignUp: React.FC = () => {
                 onSubmitEditing={() => formRef.current?.submitForm()}
               />
               <Button onPress={() => formRef.current?.submitForm()}>
-                Entrar
+                Cadastrar
               </Button>
             </Form>
           </Container>
